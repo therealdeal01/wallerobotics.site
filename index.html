@@ -27,18 +27,6 @@
             color: transparent;
             background-image: linear-gradient(to right, #4F46E5, #8B5CF6); /* Original gradient */
         }
-        .loading-text {
-            color: #4A5568;
-            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-        }
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: .5; }
-        }
-        .card-bg {
-            background-color: #1a202c;
-            border: 1px solid #2d3748;
-        }
     </style>
 </head>
 <body class="antialiased">
@@ -76,9 +64,9 @@
                         </a>
                     </div>
                 </div>
-                <!-- Hero Image Container -->
-                <div id="hero-image-container" class="flex justify-center items-center h-full min-h-[400px]">
-                    <div class="loading-text text-xl">Generating WALL-E...</div>
+                <!-- Hero Image -->
+                <div class="flex justify-center items-center h-full min-h-[400px]">
+                    <img src="/home/collectik1089/Téléchargements/dctlnxw9aibkygrnf0r0.jpg" alt="A conceptual image of a WALL-E like robot" class="w-full rounded-2xl shadow-xl transition duration-300 transform hover:scale-105 max-h-[80vh] object-contain">
                 </div>
             </div>
         </div>
@@ -117,86 +105,6 @@
         </div>
     </footer>
 
-    <script>
-        // JavaScript to handle image generation and display
-        window.onload = function() {
-            // Function to generate an image using the AI model and inject it into a container
-            async function generateImage(prompt, containerId) {
-                const container = document.getElementById(containerId);
-                // Safety check: exit if the container doesn't exist
-                if (!container) {
-                    console.error(`Error: Element with ID "${containerId}" not found.`);
-                    return;
-                }
-                
-                let retryCount = 0;
-                const maxRetries = 5;
-                const baseDelay = 1000; // 1 second
-
-                // Display a loading message
-                container.innerHTML = '<div class="loading-text text-center text-xl">Generating image...</div>';
-
-                const generate = async () => {
-                    const payload = {
-                        instances: { prompt: prompt },
-                        parameters: { "sampleCount": 1 }
-                    };
-                    const apiKey = "";
-                    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/imagen-3.0-generate-002:predict?key=${apiKey}`;
-
-                    try {
-                        const response = await fetch(apiUrl, {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify(payload)
-                        });
-
-                        console.log('API response status:', response.status); // Log the response status
-
-                        if (!response.ok) {
-                             if (response.status === 401) {
-                                throw new Error(`Authentication error (401). Please ensure the API key is valid.`);
-                            } else if (response.status === 429 && retryCount < maxRetries) {
-                                console.log(`Retrying API call... attempt ${retryCount + 1}`);
-                                const delay = baseDelay * Math.pow(2, retryCount);
-                                retryCount++;
-                                await new Promise(resolve => setTimeout(resolve, delay));
-                                return generate();
-                            } else {
-                                throw new Error(`API call failed with status: ${response.status}`);
-                            }
-                        }
-
-                        const result = await response.json();
-                        const base64Data = result?.predictions?.[0]?.bytesBase64Encoded;
-
-                        if (base64Data) {
-                            const imageUrl = `data:image/png;base64,${base64Data}`;
-                            const imgElement = document.createElement('img');
-                            imgElement.src = imageUrl;
-                            imgElement.alt = prompt;
-                            imgElement.className = 'w-full rounded-2xl shadow-xl transition duration-300 transform hover:scale-105 max-h-[80vh] object-contain';
-                            container.innerHTML = '';
-                            container.appendChild(imgElement);
-                        } else {
-                            container.innerHTML = '<div class="text-red-500 text-center">Error: Could not generate image.</div>';
-                            console.error('Error: Could not generate image. Response structure unexpected.');
-                        }
-                    } catch (error) {
-                        console.error('Error generating image:', error);
-                        container.innerHTML = `<div class="text-red-500 text-center">Error: ${error.message}. Please try again later.</div>`;
-                    }
-                };
-                generate();
-            }
-
-            // Prompts for the AI image generation
-            const heroPrompt = "a highly detailed, cinematic, and professional image of a friendly, WALL-E-like robot in a sunlit, modern living room, with a view of a city from a large window, warm and inviting atmosphere, high resolution.";
-            
-            // Generate images for the hero section and gallery
-            generateImage(heroPrompt, 'hero-image-container');
-        };
-    </script>
-
 </body>
 </html>
+
